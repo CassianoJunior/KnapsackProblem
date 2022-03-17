@@ -1,5 +1,10 @@
-Projeto 1 - 2 5
-Projeto 2 - 4 2
-Projeto 3 - 2 10
-Projeto 4 - 10 20
-Projeto 5 - 4 1
+Energia solar - 20 30
+Agropecuária - 5 12
+Inteligência Articial - 10 8
+Usina hidrelétrica - 2 6
+Startup de jogos - 5 2
+Fundo imobiliário - 6 10
+Metaverso - 15 17
+Bitcoin - 5 10
+NFT - 5 1
+Pesquisa e Desenvolvimento - 6 4

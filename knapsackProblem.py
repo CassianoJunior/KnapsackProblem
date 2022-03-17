@@ -1,6 +1,3 @@
-from array import array
-
-
 class Item:
   def __init__(self, name, weight, value) -> None:
       self.name = name
@@ -19,32 +16,9 @@ class Bag:
 
     self.items.append(item)
     return True
-
-  def searchItem(self, item: Item) -> bool:
-    for i in self.items:
-      if i.weight == item.weight and i.value == item.value:
-        return True
-
-    return False
   
   def getItems(self) -> list[Item]:
     return self.items
-
-
-# items = []
-# item1 = Item("Nome 1", 2, 5)
-# item2 = Item("Nome 1", 4, 2)
-# item3 = Item("Nome 1", 2, 10)
-# item4 = Item("Nome 1", 10, 20)
-# item5 = Item("Nome 1", 4, 1)
-
-# items.append(item1)
-# items.append(item2)
-# items.append(item3)
-# items.append(item4)
-# items.append(item5)
-
-# bag = Bag(12)
 
 def brutalForce(items: list[Item], bag: Bag) -> tuple[list[int], int, int]:
   A = [0]*len(items)
