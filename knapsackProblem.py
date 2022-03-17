@@ -37,10 +37,10 @@ def brutalForce(items: list[Item], bag: Bag) -> tuple[list[int], int, int]:
       if A[k] == 1:
           tempWeight += items[k].weight
           tempValue += items[k].value
-      if (tempValue > bestValue) and (tempWeight <= bag.capacity):
-          bestValue = tempValue
-          bestWeight = tempWeight
-          bestChoice = A[:]
+    if (tempValue > bestValue) and (tempWeight <= bag.capacity):
+        bestValue = tempValue
+        bestWeight = tempWeight
+        bestChoice = A[:]
             
   return bestChoice, bestValue, bestWeight
 
