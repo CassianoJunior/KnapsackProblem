@@ -11,9 +11,6 @@ class Bag:
     self.items = []
   
   def putItem(self, item: Item) -> bool:
-    if self.searchItem(item):
-      return False
-
     self.items.append(item)
     return True
   
