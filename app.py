@@ -7,7 +7,8 @@ def showOptions():
   3 - Mostrar itens presentes na mochila
   4 - Mostrar a capacidade atual da mochila
   5 - Carregar arquivo de itens
-  6 - Executar Knapack Problem usando força bruta
+  6 - Executar Knapsack Problem usando força bruta
+  7 - Executar Knapsack Problem usando programação dinâmica
   0 - Encerrar o programa
   """)
 
@@ -56,6 +57,7 @@ def printItems(items: list[knapsackProblem.Item], filtered: bool = False):
   Valor: {items[i].value}
   Peso: {items[i].weight}
         """)
+  resetChoice(items)
 
 def check(bag: knapsackProblem.Bag) -> bool:
   if bag.capacity == 0:
@@ -102,7 +104,7 @@ def app():
       print(f"A capacidade atual da mochila é: {bag.capacity}")
     elif option == 5:
       print("Certifique-se que o arquivo esta na mesma pasta que o programa!")
-      print("As linhas do arquivo devem serguir o seguinte formato: Nome do item - peso valor\n")
+      print("As linhas do arquivo devem seguir o seguinte formato: Nome do item - peso valor\n")
       fileName = str(input("Digite o nome do arquivo: "))
       fileItems = readFile(fileName)
       bag.items = fileItems
@@ -110,12 +112,20 @@ def app():
     elif option == 6:
       if not check(bag): continue 
       items = bag.getItems()
-      resetChoice(items)
       choice, totalValue, totalWeight = knapsackProblem.brutalForce(items, bag)
       processingReturnedData(choice, items)
       print(f"O algoritmo foi executado. Valor da mochila: {totalValue}. Peso utilizado: {totalWeight}\n")
       print("Itens escolhidos:")
       printItems(items, True)
+    elif option == 7:
+      if not check(bag): continue
+      items = bag.getItems()
+      value, weight, chosenItems = knapsackProblem.dynamicProgramming(items, bag)
+      processingReturnedData(chosenItems, items)
+      print(f"O algoritmo foi executado. Valor da mochila: {value}. Peso utilizado: {weight}\n")
+      print("Itens escolhidos:")
+      printItems(items, True)
+      
 
   print("End of program")
 

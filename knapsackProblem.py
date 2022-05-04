@@ -1,3 +1,6 @@
+from numpy import matrix
+
+
 class Item:
   def __init__(self, name, weight, value) -> None:
       self.name = name
@@ -41,14 +44,76 @@ def brutalForce(items: list[Item], bag: Bag) -> tuple[list[int], int, int]:
             
   return bestChoice, bestValue, bestWeight
 
-# def knapsackProblem(items, bag, index = 0):
-#   if len(items) == index or bag.capacity <= 0:
-#     return 0
+def knapsackProblemGreedy(items: list[Item], bag: Bag, index: int = 0) -> int:
+  if len(items) == index or bag.capacity <= 0:
+    return 0
   
-#   if items[index].weight <= bag.capacity :
-#     valueIfPut = knapsackProblem(items, Bag(bag.capacity - items[index].weight), index+1) + items[index].value
-#     valueIfNotPut = knapsackProblem(items, bag, index+1)
-#     return max(valueIfPut, valueIfNotPut)
-#   else:
-#     valueIfNotPut = knapsackProblem(items, bag, index+1)
-#     return valueIfNotPut
+  if items[index].weight <= bag.capacity :
+    valueIfPut = knapsackProblemGreedy(items, Bag(bag.capacity - items[index].weight), index+1) + items[index].value
+    valueIfNotPut = knapsackProblemGreedy(items, bag, index+1)
+    return max(valueIfPut, valueIfNotPut)
+  else:
+    valueIfNotPut = knapsackProblemGreedy(items, bag, index+1)
+    return valueIfNotPut
+
+def __generateMatriz(sizeItems: int, sizeCapacity: int) -> list[list[int]]:
+  matriz = []
+  for i in range(sizeItems+1):
+    linha = []
+    for j in range(sizeCapacity+1):
+      if i == 0 or j == 0:
+        linha.append(0)
+      else:
+        linha.append(-1)
+    matriz.append(linha)
+  
+  return matriz
+
+def __knapsackProblemRecursive(quantity: int, values: list[int], weights: list[int], bagCapacity: int, matriz: list[list[int]]) -> int:
+  if matriz[quantity][bagCapacity] == -1:
+    if weights[quantity-1] > bagCapacity:
+      matriz[quantity][bagCapacity] = __knapsackProblemRecursive(quantity-1, values, weights, bagCapacity, matriz)
+    else:
+      useItem = values[quantity-1] + __knapsackProblemRecursive(quantity-1, values, weights, bagCapacity - weights[quantity-1], matriz)
+      notUseItem = __knapsackProblemRecursive(quantity-1, values, weights, bagCapacity, matriz)
+      matriz[quantity][bagCapacity] = max(useItem, notUseItem)
+
+  return matriz[quantity][bagCapacity]
+
+def dynamicProgramming(items: list[Item], bag: Bag):
+  matriz = __generateMatriz(len(items), bag.capacity)
+  values = []
+  weights = []
+
+  for item in items:
+    values.append(item.value)
+    weights.append(item.weight)
+  
+  value = __knapsackProblemRecursive(len(items), values, weights, bag.capacity, matriz)
+
+  for i in range(len(items)+1):
+    for j in range(bag.capacity+1):
+      print(matriz[i][j], end=" ")
+    print()
+
+  choise = [0 for i in range(len(items))]
+
+  capacity = bag.capacity
+  totalValue = value
+
+  for i in range(len(items), 0, -1):
+    if totalValue <= 0:
+      break
+    if totalValue == matriz[i - 1][capacity]:
+      continue
+    else:
+      choise[i - 1] = 1     
+      totalValue -= values[i - 1]
+      capacity -= weights[i - 1]
+  
+  weight = 0
+  for i in range(len(items)):
+    if choise[i] == 1:
+      weight += items[i].weight
+
+  return value, weight, choise
