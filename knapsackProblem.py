@@ -1,6 +1,4 @@
-from numpy import matrix
-
-
+import timeit
 class Item:
   def __init__(self, name, weight, value) -> None:
       self.name = name
@@ -20,29 +18,38 @@ class Bag:
   def getItems(self) -> list[Item]:
     return self.items
 
-def brutalForce(items: list[Item], bag: Bag) -> tuple[list[int], int, int]:
-  A = [0]*len(items)
-  bestChoice = [0]*len(items)
-  bestValue = 0
-  bestWeight = 0
-  for i in range(0, 2**(len(items))):
-    tempWeight = 0
-    tempValue = 0
-    j = len(items) - 1
-    while (A[j] != 0) and (j > 0):
+def brutalForce(items: list[Item], bag: Bag) -> tuple[list[int], int, int, float]:
+  data = []
+  def execute(items: list[Item], bag: Bag, data):
+    A = [0]*len(items)
+    bestChoice = [0]*len(items)
+    bestValue = 0
+    bestWeight = 0
+    for i in range(0, 2**(len(items))):
+      tempWeight = 0
+      tempValue = 0
+      j = len(items) - 1
+      while (A[j] != 0) and (j > 0):
         A[j] = 0
         j = j-1
-    A[j] = 1
-    for k in range(0, len(items)):
-      if A[k] == 1:
+      A[j] = 1
+      for k in range(0, len(items)):
+        if A[k] == 1:
           tempWeight += items[k].weight
           tempValue += items[k].value
-    if (tempValue > bestValue) and (tempWeight <= bag.capacity):
+      if (tempValue > bestValue) and (tempWeight <= bag.capacity):
         bestValue = tempValue
         bestWeight = tempWeight
         bestChoice = A[:]
             
-  return bestChoice, bestValue, bestWeight
+    data.append(bestChoice)
+    data.append(bestValue)
+    data.append(bestWeight)
+    
+  runtime = timeit.timeit(lambda: execute(items, bag, data), number=1)
+  return data[0], data[1], data[2], runtime
+
+brutalForce([Item("A", 1, 1), Item("B", 2, 2), Item("C", 3, 3), Item("D", 4, 4), Item("E", 5, 5)], Bag(10))
 
 def knapsackProblemGreedy(items: list[Item], bag: Bag, index: int = 0) -> int:
   if len(items) == index or bag.capacity <= 0:
@@ -80,7 +87,7 @@ def __knapsackProblemRecursive(quantity: int, values: list[int], weights: list[i
 
   return matriz[quantity][bagCapacity]
 
-def dynamicProgramming(items: list[Item], bag: Bag):
+def dynamicProgramming(items: list[Item], bag: Bag) -> tuple[int, int, list[int], float]:
   matriz = __generateMatriz(len(items), bag.capacity)
   values = []
   weights = []
@@ -90,11 +97,7 @@ def dynamicProgramming(items: list[Item], bag: Bag):
     weights.append(item.weight)
   
   value = __knapsackProblemRecursive(len(items), values, weights, bag.capacity, matriz)
-
-  for i in range(len(items)+1):
-    for j in range(bag.capacity+1):
-      print(matriz[i][j], end=" ")
-    print()
+  runtime = timeit.timeit(lambda: __knapsackProblemRecursive(len(items), values, weights, bag.capacity, matriz), number=1)
 
   choise = [0 for i in range(len(items))]
 
@@ -116,4 +119,4 @@ def dynamicProgramming(items: list[Item], bag: Bag):
     if choise[i] == 1:
       weight += items[i].weight
 
-  return value, weight, choise
+  return value, weight, choise, runtime
