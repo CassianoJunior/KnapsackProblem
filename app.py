@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 import knapsackProblem
 import generateItemFile
@@ -78,6 +77,23 @@ def check(bag: knapsackProblem.Bag) -> bool:
 
   return True
 
+def processingData(result: dict) -> None:
+  valueBaseline = result["baseline"][0]
+  weightBaseline = result["baseline"][1]
+  choiceBaseline = result["baseline"][2]
+  timeBaseline = result["baseline"][3]
+  items = result["items"]
+  processingReturnedData(choiceBaseline, items)
+  writeOnFile(items, valueBaseline, weightBaseline, timeBaseline, f"baseline-{len(items)}.txt")
+  resetChoice(items)
+  valueDynamicProgramming = result["dynamicProgramming"][0]
+  weightDynamicProgramming = result["dynamicProgramming"][1]
+  choiceDynamicProgramming = result["dynamicProgramming"][2]
+  timeDynamicProgramming = result["dynamicProgramming"][3]
+  processingReturnedData(choiceDynamicProgramming, items)
+  writeOnFile(items, valueDynamicProgramming, weightDynamicProgramming, timeDynamicProgramming, f"dynamicProgramming-{len(items)}.txt")
+  resetChoice(items)
+  
 
 def generateResults(quantity: int, capacity: int, bag: knapsackProblem.Bag) -> dict:
   results = {}
@@ -87,6 +103,7 @@ def generateResults(quantity: int, capacity: int, bag: knapsackProblem.Bag) -> d
   bag.capacity = capacity
   results["baseline"] = knapsackProblem.brutalForce(fileItems, bag)
   results["dynamicProgramming"] = knapsackProblem.dynamicProgramming(fileItems, bag)
+  results["items"] = fileItems
 
   return results
 
@@ -123,7 +140,7 @@ def generateGraphs(results: list[dict]) -> None:
   for result in resultsDynamicProgramming:
     timesDynamicProgramming.append(result[3])
   
-  sizes = [10, 20, 30, 40]
+  sizes = [10, 20, 30]
 
   makeGraph(sizes, times=timesBaseline, fileName="graphBaseline")
   makeGraph(sizes, times=timesDynamicProgramming, fileName="graphDynamicProgramming")
@@ -175,7 +192,7 @@ def app():
     elif option == 7:
       if not check(bag): continue 
       items = bag.getItems()
-      choice, totalValue, totalWeight, runtime = knapsackProblem.brutalForce(items, bag)
+      totalValue, totalWeight, choice, runtime = knapsackProblem.brutalForce(items, bag)
       processingReturnedData(choice, items)
       print(f"O algoritmo foi executado. Valor da mochila: {totalValue}. Peso utilizado: {totalWeight}\n")
       writeOnFile(items, totalValue, totalWeight, runtime, f"knapsackProblemBaseline-{len(items)}.txt")
@@ -192,9 +209,12 @@ def app():
       results10 = generateResults(10, 400, bag)
       results20 = generateResults(20, 800, bag)
       results30 = generateResults(30, 1200, bag)
-      results40 = generateResults(40, 1600, bag)
 
-      results = [results10, results20, results30, results40]
+      processingData(results10)
+      processingData(results20)
+      processingData(results30)
+
+      results = [results10, results20, results30]
 
       generateGraphs(results)
 

@@ -47,7 +47,7 @@ def brutalForce(items: list[Item], bag: Bag) -> tuple[list[int], int, int, float
     data.append(bestWeight)
     
   runtime = timeit.timeit(lambda: execute(items, bag, data), number=1)
-  return data[0], data[1], data[2], runtime
+  return data[1], data[2], data[0], runtime
 
 brutalForce([Item("A", 1, 1), Item("B", 2, 2), Item("C", 3, 3), Item("D", 4, 4), Item("E", 5, 5)], Bag(10))
 
